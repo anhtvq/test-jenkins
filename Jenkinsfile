@@ -11,7 +11,7 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git 'https://github.com/anhtvq/config-be.git'
+        git 'https://github.com/anhtvq/test-jenkins.git'
       }
     }
 
