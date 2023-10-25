@@ -15,21 +15,6 @@ pipeline {
       }
     }
 
-    stage('Build image') {
-      steps{
-        script {
-          dockerImage = docker.build dockerimagename
-        }
-      }
-    }
-
-    stage('Deploying App container to Kubernetes') {
-      steps {
-        script {
-          kubernetesDeploy(configs: "tomcat_webadmin.yaml", "tomcat_webadmin_service.yaml")
-        }
-      }
-    }
 
   }
 
