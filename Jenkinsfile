@@ -10,9 +10,7 @@ pipeline {
   stages {
 
     stage('Checkout Source') {
-      steps {
-        git 'https://github.com/anhtvq/test-jenkins.git'
-      }
+      checkout scm
     }
 
 
