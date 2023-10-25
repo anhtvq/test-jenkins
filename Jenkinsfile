@@ -14,7 +14,13 @@ pipeline {
         checkout scm
       }
     }
-
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build dockerimagename
+        }
+      }
+    }
 
   }
 
