@@ -14,10 +14,10 @@ pipeline {
         checkout scm
       }
     }
-    stage('Build image') {
-      steps{
+    stage('Deploying App container to Kubernetes') {
+      steps {
         script {
-          dockerImage = docker.build dockerimagename
+          kubernetesDeploy(configs: "tomcat_webadmin.yaml", "tomcat_webadmin_service.yaml")
         }
       }
     }
