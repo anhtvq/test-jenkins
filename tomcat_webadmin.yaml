@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: digital-webadmin
+  namespace: default
+  labels:
+    app: digital-webadmin
+    environment: test
+spec:
+  selector:
+    matchLabels:
+      run: digital-webadmin
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: digital-webadmin
+    spec:
+      containers:
+      - name: digital-webadmin
+        image: banking.digital/webadmin:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: TZ
+            value: Asia/Saigon
+          - name: LANG
+            value: en_US.utf-8
+          - name: INTEGRATE_FBE_USERNAME
+            value: interfaceuser
+          - name: INTEGRATE_FBE_PWD
+            value: 123456a@
+          - name: INTEGRATE_API_URL
+            value: http://192.168.57.18:7645/ib/api
+          - name: SMS_API_URL
+            value: http://192.168.254.64:8888/api/
+        livenessProbe:
+            httpGet:
+                path: /
+                port: 8080
+            initialDelaySeconds: 300
+            periodSeconds: 60            
+        resources:
+            requests:
+                cpu: "10m"
+                memory: 100Mi
+            limits:
+                cpu: "500m"
+                memory: 500Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: webadmin-configmap
+  namespace: default
+data:
+  module.ekyc.service.application.properties: |-
+    server.port=8082
+
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: webadmin-secret
+  namespace: default
+data:
+  Sale_Private.pem: >-
+    TUlJRXZ3SUJBREFOQmdrcWhraUc5dzBCQVFFRkFBU0NCS2t3Z2dTbEFnRUFBb0lCQVFEYm1MWnlza3p5Q283WUlXeWIwSE9IVDJpa3Vmd2RNYVdaaklPUzdmTmFXL093ZTZLK2c3VUtldEYxeDRRdlJ4TVM4MjdtWk9zN2YyNHQyN1Z4eURFKzRWc3grUjUyVzFPOWROWllVTmxwZXRtd0xnK1llbTdUbmZhTmxqT3FMbDJOZzF4MzQxMWs0YWRNWUlEc1RnTVhDOVgwVEtJV3p5VFZNS3l3VTNtMzYxcHF2TUZqdk5OZ0I2UzBtRDA4R0ZSeDl2UTZydTNiK3ZKMUpPcEFtTFp6VzllZThiRHRjK2dCN0xkajRyUGUxVmhJSEhBYmVGdEJScVRQNmJoV0lOdVZnVW5OVm9tUlNhNGw3QzNXTzJMSkp1YUltaU9sODZwdEE3dnprekgyM0RzdDJtbXB5TFZxM3NHdXhwb0NIeU5Wa21LR1ZTZG1UOXZJbklHZ2luQjlBZ01CQUFFQ2dnRUJBS0ZlOTdRUmtybkxTRzFMSXFUZDZnZmxNdURhUzRxb2tTamxPVXNmMFZUMWZYNlRYR1RrSklZdSt2MnlRRkQ5eWVhRFBWdlJqWXVMZVV2NXlMeDBnTHZVbjA5NTRnalgxQkhGYWo0OEs0aDMzc0M1R0h6VWU5ekdtQWd6K0lOMnp3alBINFI2Y0lkUnk3ODBxNGo3U3dvRWlKV2VPdjdIK2lrd083YlhvUHFsZkxNVFZqVjV3THZ6MlBhVU9MdTM0c1ZZZEdqaDVNdGFGaFVNZ0pudlFnNWdjZ1JNeWw1WElsbEJINXRxNndSQXhhMlJvcjFkSFdOdU81UTFSY1E3WDMvM0xUd0RheUtFMzROTTdTdXBGbUdabUQ0ODBXV2tuOE5TTHhVNngxbVV2VVA3MXkvMjdQWVphMGR6QkQrdTcwWkNPUlNvSGRFTk5FeDNIOTBtbzRFQ2dZRUE3VFhWZHhaU0NJZ3o0T2JrMTFWbW1VeUhsakdwWCsxUUdScVNxVHZBdGU1a3RleVZsM0F5dis2UTNIMnlySGdRTmFlU3BpbUV6N25XMXVERUxQRWJtK1BpRGdqajNBSDhCVUR2d0ZwZXlEcUJzalRKTmlxaVBRcU5uSk1ranJmeWQ3S0FsKzJ4WmZwaUhDTzk2dXN5cnFiMnUwenBiamIxa3hYU28za3NwZWNDZ1lFQTdQMjB1S1oyNitXcWZWT3JVbXpRaHZDNndUSTh3NTBHaG05UFNpdUt6RSsxK3pxZHJoampRZ09GWmJnSTN5MWlRU3MzTkMxOHJGcjZuR3dVa1FyY2t6elFKdW5JQjY1WXRKYUJCSkpkM2w3RExMZGg4SWZKMUVDdnNFTWZZN0M3Q092U3lTckFQRkdxT2QyS2svRzliY1B5aytHa204dEdoaU5WZEQ1M0lmc0NnWUVBZ2lLUWs1NnBMb2thZlAzdStidWVaK2UyVXMyMzhDcVBVTlpsTTNiV2lIamF3M3VocmMwZDZuSUZBeEhxbmZmWVhMY3NHd0NZSGlZRUdTcUNOVzJwQ2VNQk4xWGxPK1BTMFVjSXdPeFRKMklCbVRTZ1Zwa1pISWZYbk5pVXE3OTZ3L1FuM0RISXF2dXNLMmZvWHlMZFVUZkVFSWxuWHRIRDlBZDY0Ymd1cUcwQ2dZQUpLNmdhblJacyttNG1lMTVkeWlnbmtKa3BjTEE1UVpKSEVYZVgveWRYMEozU0l1cUhHaDl4Sm9HNjlld2g5cmVlbmZWODUyV3pwYkdjNi9HL3l4UE4vc1J2UFF5b2YyNmZUbE9md2Fvd09LcUV5SFBad3Vka2R6eFZMY1BCTDgyTkF0TWRSYkk2bzA1YS90K2w2ZXpTbW9xQWZuTElOSTErRTAvek41ZVVrUUtCZ1FEQm9vYWdQTy9PNFhjOFA3VlpCV3NXclZGU2h1Q2RiOGRDTWludUV2bU1rZGJveWRRZTlHTzdzWmxDQ05uZnE4LzlyMzNNY1FEeGJ0Q3ZKN3B3TUlaTFJPaDZBaDVjejlzcVJCbkpWZTYrN1FodlNOWitCcS8zelRuSm1sTWFtNlluZDhWbWJ3UEdmRlliRnVISFhrNU0yV1FwdmhxU3FNaW40VWRTd1dxemJBPT0=
+ 
+type: Opaque
